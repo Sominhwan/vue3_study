@@ -1,31 +1,143 @@
-<template>
+
+// 데이터 바인딩
+<!-- <template>
   <div>
-    <div>{{ name }}</div>
+    <div :class="nameClass">{{ name }}</div>
     <div>{{ name2 }}</div>
+    <input :value="name" :type="type">
     <button class="btn btn-primary" @click="updateName()">Click1</button>
     <button class="btn btn-primary" @click="updateName2()">Click2</button>
   </div>
 </template>
 
-<script setup>
-  import { reactive, ref } from 'vue';
+<script>
+import { reactive, ref } from 'vue';
+export default {
+  setup() {
+    const name = ref('Hello World!');
+    const name2= reactive({
+      id: 1
+    });
+    const type = ref('number');
+    const nameClass = ref('name');
+    // const greeting = (name) => {
+    //   return 'Hello, ' + name;
+    // };
 
-  const name = ref('Hello World!');
-  const name2= reactive({
-    id: 1
-  });
-  // const greeting = (name) => {
-  //   return 'Hello, ' + name;
-  // };
+    const updateName = () => {
+      name.value = 'Hello World2';
+      type.value = 'text';
+    };
+    const updateName2 = () => {
+    name2.id = 2;
+    console.log(name2);
+    };
 
-  const updateName = () => {
-   name.value = 'Hello World2'
-   console.log(name);
+    return {
+      name, name2, updateName, updateName2, type, nameClass
+    };
   }
-  const updateName2 = () => {
-   name2.id = 2;
-   console.log(name2);
+}
+
+</script>
+<style scoped>
+  .name {
+    color: red;
   }
+</style> -->
+
+// 양방향 데이터 바인딩
+<!-- <template>
+  <div>
+    <input 
+      type="text"
+      :value="name"
+      @input="updateName"
+    >
+    <button class="btn btn-primary" @click="onSubmit">Click1</button>
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue';
+export default {
+  setup() {
+    const name = ref('Hello World!');
+
+
+    const onSubmit = () => {
+      console.log(name.value);
+    };
+    const updateName = (e) => {
+      name.value = e.target.value
+    };
+
+    return {
+      name, 
+      onSubmit,
+      updateName
+    };
+  }
+}
+
+</script>
+<style scoped>
+  .name {
+    color: red;
+  }
+</style> -->
+
+// Todo List
+<template>
+  <div class="container">
+    <h2>To-Do List</h2>
+    <form 
+      @submit.prevent="onSubmit"
+      class="d-flex"
+    >
+        <div class="flex-grow-1 mr-2">
+          <input 
+            class="form-control"
+            type="text"
+            v-model="todo"
+            placeholder="Type new to-do"
+          >
+        </div>
+        <div>
+          <button class="btn btn-primary" type="submit">Add</button>
+        </div>
+    </form>
+    {{ todos[0] }}
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue';
+export default {
+  setup() {
+    const todo = ref('');
+    const todos = ref([]);
+
+
+    const onSubmit = () => {
+      todos.value.push({
+        id: Date.now(),
+        subject: todo.value
+      });
+    };
+    const updateName = (e) => {
+      name.value = e.target.value
+    };
+
+    return {
+      todo, 
+      onSubmit,
+      updateName,
+      todos
+    };
+  }
+}
+
 </script>
 <style scoped>
   .name {
