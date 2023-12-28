@@ -152,8 +152,8 @@ export default {
   }
 </style> -->
 
-// v-if, v-show, checkbox
-<template>
+// v-if, v-show, checkbox, 배열 아이템 삭제
+<!-- <template>
   <div class="container">
     <h2>To-Do List</h2>
     <form 
@@ -178,11 +178,20 @@ export default {
     </div>
 
     </form>
-    <div class="card mt-2" v-for="todo in todos" :key="todo.id">
-      <div class="card-body p-2">
-        <div class="form-check">
+    <div v-if="!todos.length">
+      추가된 Todo 가 없습니다
+    </div>
+    <div class="card mt-2" v-for="(todo, index) in todos" :key="todo.id">
+      <div class="card-body p-2 d-flex alingn-items-center">
+        <div class="form-check flex-grow-1">
           <input class="form-check-input" type="checkbox" v-model="todo.completed">
           <label class="form-check-label" :class="{ todo: todo.completed }">{{ todo.subject }}</label>
+        </div>
+        <div>
+          <button class="btn btn-danger btn-sm"
+            @click="deleteTodo(index)">
+            Delete
+          </button>
         </div>
       </div>
     </div>   
@@ -224,6 +233,10 @@ export default {
     const onToggle = () => {
       toggle.value = !toggle.value;
     }
+    
+    const deleteTodo = (index) => {
+      todos.value.splice(index, 1);
+    };
 
     return {
       todo, 
@@ -233,7 +246,85 @@ export default {
       toggle,
       onToggle,
       hasError,
-      todoStyle
+      todoStyle,
+      deleteTodo
+    };
+  }
+}
+
+</script>
+<style scoped>
+  .todo {
+    color: gray;
+    text-decoration: line-through;
+  }
+</style> -->
+
+// props, emit
+<template>
+  <div class="container">
+    <h2>To-Do List</h2>
+    <TodoSimpleFormVue @add-todo="addTodo"/>
+
+    <div v-if="!todos.length">
+      추가된 Todo 가 없습니다
+    </div>
+    <TodoListVue :todos="todos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"/>
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue';
+import TodoListVue from './components/TodoList.vue';
+import TodoSimpleFormVue from './components/TodoSimpleForm.vue';
+
+export default {
+  components: {
+    TodoSimpleFormVue,
+    TodoListVue
+  },
+  setup() {
+    const toggle = ref(false);
+    const todos = ref([
+
+    ]);
+    const todoStyle = {
+      textDecoration: 'line-through',
+      color: 'gray'
+    }
+
+    const addTodo = (todo) => {
+      console.log(todo);
+      todos.value.push(todo);
+    };
+
+    const toggleTodo = (index) => {
+      console.log(todos.value[index]);
+      todos.value[index].completed = !todos.value[index].completed;
+      console.log(todos.value[index]);
+    };
+
+    const updateName = (e) => {
+      name.value = e.target.value
+    };
+
+    const onToggle = () => {
+      toggle.value = !toggle.value;
+    }
+    
+    const deleteTodo = (index) => {
+      todos.value.splice(index, 1);
+    };
+
+    return {
+      addTodo,
+      toggleTodo,
+      updateName,
+      todos,
+      toggle,
+      onToggle,
+      todoStyle,
+      deleteTodo
     };
   }
 }
