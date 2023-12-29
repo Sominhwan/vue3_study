@@ -260,9 +260,15 @@ export default {
   }
 </style> -->
 
-// props, emit
-<template>
+// props, emit, computed(캐싱처리)
+<!-- <template>
   <div class="container">
+    <h4>count: {{ count }}</h4>
+    <h4>double count computed: {{ doubleCountComputed }}</h4>
+    <h4>double count computed: {{ doubleCountComputed }}</h4>
+    <h4>double count method: {{ doubleCountMethod() }}</h4>
+    <h4>double count method: {{ doubleCountMethod() }}</h4>
+    <button @click="count++">Add One</button>
     <h2>To-Do List</h2>
     <TodoSimpleFormVue @add-todo="addTodo"/>
 
@@ -274,7 +280,7 @@ export default {
 </template>
 
 <script>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import TodoListVue from './components/TodoList.vue';
 import TodoSimpleFormVue from './components/TodoSimpleForm.vue';
 
@@ -316,6 +322,17 @@ export default {
       todos.value.splice(index, 1);
     };
 
+    const count = ref(1);
+    const doubleCountComputed = computed(() => {
+      console.log('computed')
+      return count.value * 2;
+    });
+
+    const doubleCountMethod = () => {
+      console.log('method')
+      return count.value * 2;
+    }
+
     return {
       addTodo,
       toggleTodo,
@@ -324,7 +341,112 @@ export default {
       toggle,
       onToggle,
       todoStyle,
-      deleteTodo
+      deleteTodo,
+      count,
+      doubleCountComputed,
+      doubleCountMethod
+    };
+  }
+}
+
+</script>
+<style scoped>
+  .todo {
+    color: gray;
+    text-decoration: line-through;
+  }
+</style> -->
+
+// 검색기능
+<template>
+  <div class="container">
+    <h2>To-Do List</h2>
+    <input 
+        class="form-control"
+        type="text"
+        v-model="searchText"
+        placeholder="Search"
+    >
+    <hr/>
+
+
+    <TodoSimpleFormVue @add-todo="addTodo"/>
+    <div v-if="!filteredTodos.length">
+      There is nothing to dislplay
+    </div>
+
+    <!-- <div v-if="!todos.length">
+      추가된 Todo 가 없습니다
+    </div> -->
+    <TodoListVue :todos="filteredTodos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"/>
+  </div>
+</template>
+
+<script>
+import { computed, ref } from 'vue';
+import TodoListVue from './components/TodoList.vue';
+import TodoSimpleFormVue from './components/TodoSimpleForm.vue';
+
+export default {
+  components: {
+    TodoSimpleFormVue,
+    TodoListVue
+  },
+  setup() {
+    const toggle = ref(false);
+    const todos = ref([
+
+    ]);
+    const todoStyle = {
+      textDecoration: 'line-through',
+      color: 'gray'
+    }
+
+    const addTodo = (todo) => {
+      console.log(todo);
+      todos.value.push(todo);
+    };
+
+    const toggleTodo = (index) => {
+      console.log(todos.value[index]);
+      todos.value[index].completed = !todos.value[index].completed;
+      console.log(todos.value[index]);
+    };
+
+    const updateName = (e) => {
+      name.value = e.target.value
+    };
+
+    const onToggle = () => {
+      toggle.value = !toggle.value;
+    }
+    
+    const deleteTodo = (index) => {
+      todos.value.splice(index, 1);
+    };
+
+    const searchText = ref('');
+    const filteredTodos = computed(() => {
+      if(searchText.value) {
+        return todos.value.filter(todo => {
+          return todo.subject.includes(searchText.value);
+        });
+      }
+
+      return todos.value;
+    });
+
+    return {
+      addTodo,
+      toggleTodo,
+      updateName,
+      todos,
+      toggle,
+      onToggle,
+      todoStyle,
+      deleteTodo,
+      searchText,
+      filteredTodos
     };
   }
 }
