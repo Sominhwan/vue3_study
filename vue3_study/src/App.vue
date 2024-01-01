@@ -358,7 +358,7 @@ export default {
 </style> -->
 
 // 검색기능
-<template>
+<!-- <template>
   <div class="container">
     <h2>To-Do List</h2>
     <input 
@@ -375,9 +375,6 @@ export default {
       There is nothing to dislplay
     </div>
 
-    <!-- <div v-if="!todos.length">
-      추가된 Todo 가 없습니다
-    </div> -->
     <TodoListVue :todos="filteredTodos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"/>
   </div>
 </template>
@@ -447,6 +444,148 @@ export default {
       deleteTodo,
       searchText,
       filteredTodos
+    };
+  }
+}
+
+</script>
+<style scoped>
+  .todo {
+    color: gray;
+    text-decoration: line-through;
+  }
+</style> -->
+
+// TODO DB
+<template>
+  <div class="container">
+    <h2>To-Do List</h2>
+    <input 
+        class="form-control"
+        type="text"
+        v-model="searchText"
+        placeholder="Search"
+    >
+    <hr/>
+    <TodoSimpleFormVue @add-todo="addTodo"/>
+    <div style="color: red">{{ error }}</div>
+
+    <div v-if="!filteredTodos.length">
+      There is nothing to dislplay
+    </div>
+
+    <TodoListVue :todos="filteredTodos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"/>
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+import { computed, ref } from 'vue';
+import TodoListVue from './components/TodoList.vue';
+import TodoSimpleFormVue from './components/TodoSimpleForm.vue';
+
+export default {
+  components: {
+    TodoSimpleFormVue,
+    TodoListVue
+  },
+  setup() {
+    const toggle = ref(false);
+    const todos = ref([]);
+    const error = ref('');
+
+    const getTodos = async () => {
+      try{
+        const res = await axios.get('http://localhost:3001/todos');
+        todos.value = res.data
+        console.log(res);
+      } catch(err) {
+        console.log(err);
+        error.value = 'Somthing went wrong.';
+      }
+
+    };
+
+
+    getTodos();
+    const todoStyle = {
+      textDecoration: 'line-through',
+      color: 'gray'
+    }
+
+    const addTodo = async (todo) => {
+      // 데이터베이스 투두를 저장
+      error.value = '';
+      try {
+        const res = await axios.post('http://localhost:3001/todos', {
+          subject: todo.subject,
+          completed: todo.completed
+        });
+        todos.value.push(res.data);
+      } catch (err) {
+        console.log(err);
+        error.value = 'Somthing went wrong.';
+      }
+        // .then(res => {
+      //   console.log(res);
+      //   todos.value.push(res.data);
+      // }).catch(err => {
+      //   console.log(err);
+      //   error.value = 'Somthing went wrong.';
+      // });
+      console.log('hello');
+    };
+
+    const toggleTodo = (index) => {
+      console.log(todos.value[index]);
+      todos.value[index].completed = !todos.value[index].completed;
+      console.log(todos.value[index]);
+    };
+
+    const updateName = (e) => {
+      name.value = e.target.value
+    };
+
+    const onToggle = () => {
+      toggle.value = !toggle.value;
+    }
+    
+    const deleteTodo = async (index) => {
+      error.value = '';
+      const id = todos.value[index].id;
+      try {
+        await axios.delete('http://localhost:3001/todos/' + id);
+
+        todos.value.splice(index, 1);
+      } catch (err) {
+        console.log(err);
+        error.value = 'Somthing went wrong.';
+      }
+    };
+
+    const searchText = ref('');
+    const filteredTodos = computed(() => {
+      if(searchText.value) {
+        return todos.value.filter(todo => {
+          return todo.subject.includes(searchText.value);
+        });
+      }
+
+      return todos.value;
+    });
+
+    return {
+      addTodo,
+      toggleTodo,
+      updateName,
+      todos,
+      toggle,
+      onToggle,
+      todoStyle,
+      deleteTodo,
+      searchText,
+      filteredTodos,
+      error
     };
   }
 }
