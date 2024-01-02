@@ -456,7 +456,7 @@ export default {
   }
 </style> -->
 
-// TODO DB
+// TODO pagination, watch effect
 <template>
   <div class="container">
     <h2>To-Do List</h2>
@@ -474,38 +474,76 @@ export default {
       There is nothing to dislplay
     </div>
 
-    <TodoListVue :todos="filteredTodos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"/>
+    <TodoList :todos="filteredTodos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo"/>
+    <hr/>
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <li v-if="currentPage !== 1" class="page-item">
+          <a style="cursor: pointer;" class="page-link" href="#" @click="getTodos(currentPage -1)">Preview</a>
+        </li>
+        <li v-for="page in numberOfPages" :key="page"
+            class="page-item"
+            :class="currentPage === page ? 'active' : ''">
+            <a style="cursor: pointer;" class="page-link" href="#" @click="getTodos(page)">{{ page }}</a>
+        </li>
+        <li v-if="numberOfPages !== currentPage" class="page-item">
+          <a style="cursor: pointer;" class="page-link" href="#" @click="getTodos(currentPage + 1)">Next</a>
+        </li>
+      </ul>
+    </nav>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { computed, ref } from 'vue';
-import TodoListVue from './components/TodoList.vue';
+import { computed, ref, watchEffect } from 'vue';
+import TodoList from './components/TodoList.vue';
 import TodoSimpleFormVue from './components/TodoSimpleForm.vue';
 
 export default {
   components: {
     TodoSimpleFormVue,
-    TodoListVue
+    TodoList
   },
   setup() {
     const toggle = ref(false);
     const todos = ref([]);
     const error = ref('');
+    const numberOfTodos = ref(0);
+    let limit = 5;
+    const currentPage = ref(1);
+    
+    watchEffect(() => {
+      console.log(limit); 
+    });
 
-    const getTodos = async () => {
+    limit = 3;
+    const numberOfPages = computed(() => {
+      return Math.ceil(numberOfTodos.value/limit);
+    });
+
+    // const a = reactive({
+    //   b: 1
+    // });
+    // watchEffect(() => {
+    //   console.log(a.b);
+    // });
+    // a.b = 4;
+
+    const getTodos = async (page = currentPage.value) => {
+      currentPage.value = page;
       try{
-        const res = await axios.get('http://localhost:3001/todos');
+        const res = await axios.get(
+          `http://localhost:3001/todos?_page=${page}&_limit=${limit}`
+        );
+        numberOfTodos.value = res.headers['x-total-count'];
         todos.value = res.data
-        console.log(res);
       } catch(err) {
         console.log(err);
         error.value = 'Somthing went wrong.';
       }
 
     };
-
 
     getTodos();
     const todoStyle = {
@@ -536,10 +574,18 @@ export default {
       console.log('hello');
     };
 
-    const toggleTodo = (index) => {
-      console.log(todos.value[index]);
-      todos.value[index].completed = !todos.value[index].completed;
-      console.log(todos.value[index]);
+    const toggleTodo = async (index) => {
+      error.value = '';
+      const id = todos.value[index].id;
+      try {
+        await axios.patch('http://localhost:3001/todos/' + id, {
+          completed: !todos.value[index].completed
+        });
+        todos.value[index].completed = !todos.value[index].completed;
+      } catch(err) {
+        console.log(err);
+        error.value = 'Somthing went wrong.';
+      }
     };
 
     const updateName = (e) => {
@@ -585,7 +631,10 @@ export default {
       deleteTodo,
       searchText,
       filteredTodos,
-      error
+      error,
+      numberOfPages,
+      currentPage,
+      getTodos
     };
   }
 }

@@ -1,0 +1,3 @@
+npm install -g json-server
+// 서버 구동 명렁어 json-server --watch db.json --port 5000
+npm i axios
