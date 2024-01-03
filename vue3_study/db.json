@@ -1,21 +1,6 @@
 {
   "todos": [
     {
-      "subject": "buy milk",
-      "completed": true,
-      "id": 1
-    },
-    {
-      "subject": "hi",
-      "completed": true,
-      "id": 2
-    },
-    {
-      "subject": "study",
-      "completed": false,
-      "id": 3
-    },
-    {
       "subject": "1",
       "completed": false,
       "id": 4
@@ -37,7 +22,7 @@
     },
     {
       "subject": "5",
-      "completed": false,
+      "completed": true,
       "id": 8
     },
     {
@@ -59,6 +44,26 @@
       "subject": "안녕",
       "completed": false,
       "id": 12
+    },
+    {
+      "subject": "안녕",
+      "completed": false,
+      "id": 13
+    },
+    {
+      "subject": "new todo",
+      "completed": false,
+      "id": 14
+    },
+    {
+      "subject": "qwer",
+      "completed": false,
+      "id": 15
+    },
+    {
+      "subject": "하이용",
+      "completed": false,
+      "id": 16
     }
   ]
 }

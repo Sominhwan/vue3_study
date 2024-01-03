@@ -1,21 +1,19 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router'
+import Home from '../views/index.vue'
+import Todos from '../views/todos/index.vue'
 
 const routes = [
   {
     path: '/',
-    component: () => import('@/layouts/default/Default.vue'),
-    children: [
-      {
-        path: '',
-        name: 'Home',
-        // route level code-splitting
-        // this generates a separate chunk (Home-[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import('@/views/Home.vue'),
-      },
-    ],
+    name: 'Home',
+    component: Home,
   },
+  {
+    path: '/todos',
+    name: 'Todos',
+    component: Todos
+  }
 ]
 
 const router = createRouter({

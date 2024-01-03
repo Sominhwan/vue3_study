@@ -42,6 +42,9 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+  .todo {
+    color: gray;
+    text-decoration: line-through;
+  }
 </style>
