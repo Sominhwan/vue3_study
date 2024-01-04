@@ -1,7 +1,8 @@
 // Composables
+import Home from '@/views/index.vue'
+import Todo from '@/views/todos/_id.vue'
+import Todos from '@/views/todos/index.vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/index.vue'
-import Todos from '../views/todos/index.vue'
 
 const routes = [
   {
@@ -13,6 +14,11 @@ const routes = [
     path: '/todos',
     name: 'Todos',
     component: Todos
+  },
+  {
+    path: '/todos/:id',
+    name: 'Todo',
+    component: Todo
   }
 ]
 
