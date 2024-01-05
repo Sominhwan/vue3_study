@@ -37,33 +37,18 @@
     },
     {
       "subject": "buy",
-      "completed": false,
+      "completed": true,
       "id": 11
     },
     {
       "subject": "안녕",
-      "completed": false,
+      "completed": true,
       "id": 12
     },
     {
-      "subject": "안녕",
-      "completed": false,
+      "subject": "안녕3",
+      "completed": true,
       "id": 13
-    },
-    {
-      "subject": "new todo",
-      "completed": false,
-      "id": 14
-    },
-    {
-      "subject": "qwer",
-      "completed": false,
-      "id": 15
-    },
-    {
-      "subject": "하이용",
-      "completed": false,
-      "id": 16
     }
   ]
 }

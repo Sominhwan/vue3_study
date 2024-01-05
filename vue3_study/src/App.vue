@@ -827,14 +827,17 @@ export default {
 // TODO router
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <router-link class="navbar-brand" to="/">Test Coder</router-link>
+    <router-link class="navbar-brand" :to="{ name: 'Home' }">Test Coder</router-link>
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <router-link class="nav-link" to="/todos">Todos</router-link>
+        <router-link class="nav-link" :to="{ name: 'Todos' }">Todos</router-link>
       </li>
     </ul>
   </nav>
-  <router-view/>
+  <div class="container">
+    <router-view/>
+  </div>
+
 </template>
 
 <script>
