@@ -35,7 +35,11 @@
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">
+        <button 
+            type="submit" 
+            class="btn btn-primary"
+            :disabled="!todoUpdated"
+        >
             Save
         </button>
         <button 
@@ -45,27 +49,75 @@
             Cancel
         </button>
     </form>
+    <Toast 
+        v-if="showToast"
+        :message="toastMessage"
+        :type="toastAlertType"
+    />
+    <div id="kossie">coder</div>
 </template>
 
 <script>
-import { ref } from '@vue/reactivity';
+import Toast from '@/components/Toast.vue';
+import { computed, ref } from '@vue/reactivity';
 import axios from 'axios';
+import _ from 'lodash';
+import { onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-
 export default {
+    components :{
+        Toast
+    },
     setup() {
+        // onBeforeMount(() => {
+        //     console.log(document.querySelector('#kossie')); 
+        // });
+        // onMounted(() => {
+        //     console.log(document.querySelector('#kossie')); 
+        // });
+        // onBeforeUpdate(() => {
+        //    console.log('beforeUpdated'); 
+        // });
+        // onUpdated(() => {
+        //     console.log('updated');
+        // }),
+        // onBeforeUnmount(() => {
+        //    console.log('before unmount'); 
+        // });
         const route = useRoute();
         const router = useRouter();
-        const todo = ref('null');
+        const todo = ref(null);
+        const originalTodo = ref(null);
         const loading = ref(true);
+        const showToast = ref(false);
+        const toastMessage = ref('');
+        const toastAlertType = ref('');
+        const timeout = ref(null);
         const todoId = route.params.id
 
-        const getTodo = async () => {
-            const res = await axios.get(`http://localhost:3001/todos/${todoId}`)
+        onUnmounted(() => {
+            console.log('unmounted');
+            clearTimeout(timeout.value);
+        });
 
-            todo.value = res.data;
-            loading.value = false;
+        const getTodo = async () => {
+            try {
+                const res = await axios.get(`http://localhost:3001/todos/${todoId}`)
+
+                todo.value = { ...res.data};
+                originalTodo.value = { ...res.data};
+                loading.value = false;
+            } catch (error) {
+                console.log(error);
+                triggerToast('Something went wrong', 'danger');
+            }
+
         }
+
+        const todoUpdated = computed(() => {
+            return !_.isEqual(todo.value, originalTodo.value)
+        });
+
         const toggleTodoStatus = () => {
             todo.value.completed = !todo.value.completed;
         };
@@ -78,13 +130,31 @@ export default {
 
         getTodo();
 
-        const onSave = async () => {
-            const res = await axios.put(`http://localhost:3001/todos/${todoId}`, {
-                subject: todo.value.subject,
-                completed: todo.value.completed
-            });
+        const triggerToast = (message, type = 'success') => {
+            toastMessage.value = message;
+            toastAlertType.value = type;
+            showToast.value = true;
+            timeout.value = setTimeout(() => {
+                console.log('hello');
+                toastMessage.value = '';
+                toastAlertType.value = '';
+                showToast.value = false;
+            }, 5000)
+        };
 
-            console.log(res);
+        const onSave = async () => {
+            try {
+                const res = await axios.put(`http://localhost:3001/todos/${todoId}`, {
+                    subject: todo.value.subject,
+                    completed: todo.value.completed
+                });
+                originalTodo.value = {...res.data};
+                triggerToast('Sucessfully saved!');                   
+            } catch (error) {
+                console.log(error);
+                triggerToast('Something went wrong', 'danger')
+            }
+       
         };
 
         return {
@@ -92,7 +162,12 @@ export default {
             loading,
             toggleTodoStatus,
             mopeToTodoListPage,
-            onSave
+            onSave,
+            originalTodo,
+            todoUpdated,
+            showToast,
+            toastMessage,
+            toastAlertType
         };
     }
 }

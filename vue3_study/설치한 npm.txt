@@ -3,3 +3,5 @@ npm install -g json-server
 npm i axios
 
 npm install vue-router
+
+npm i lodash
