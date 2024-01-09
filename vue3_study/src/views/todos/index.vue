@@ -1,6 +1,11 @@
 <template>
   <div>
-    <h2>To-Do List</h2>
+    <div class="d-flex justify-content-between mb-3">
+      <h2>To-Do List</h2>
+      <button class="btn btn-primary" @click="moveToCreatePage">
+        Create Todo
+      </button>
+    </div>
     <input 
         class="form-control"
         type="text"
@@ -34,20 +39,28 @@
       </ul>
     </nav>
   </div>
+  <Toast 
+        v-if="showToast"
+        :message="toastMessage"
+        :type="toastAlertType"
+    />
 </template>
 
 <script>
+import Toast from '@/components/Toast.vue';
 import TodoList from '@/components/TodoList.vue';
-import TodoSimpleFormVue from '@/components/TodoSimpleForm.vue';
+import { userToast } from '@/composables/toast.js';
 import axios from 'axios';
 import { computed, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default {
   components: {
-    TodoSimpleFormVue,
-    TodoList
+    TodoList,
+    Toast
   },
   setup() {
+    const router = useRouter();
     const toggle = ref(false);
     const todos = ref([]);
     const error = ref('');
@@ -58,6 +71,13 @@ export default {
     const numberOfPages = computed(() => {
       return Math.ceil(numberOfTodos.value/limit);
     });
+
+    const {
+      toastMessage,
+      toastAlertType ,
+      showToast,
+      triggerToast
+    } = userToast();
 
     const getTodos = async (page = currentPage.value) => {
       currentPage.value = page;
@@ -71,6 +91,7 @@ export default {
       } catch(err) {
         console.log(err);
         error.value = 'Somthing went wrong.';
+        triggerToast('Something went wrong', 'danger')
       }
 
     };
@@ -93,6 +114,7 @@ export default {
       } catch (err) {
         console.log(err);
         error.value = 'Somthing went wrong.';
+        triggerToast('Something went wrong', 'danger')
       }
  
       console.log('hello');
@@ -109,6 +131,7 @@ export default {
       } catch(err) {
         console.log(err);
         error.value = 'Somthing went wrong.';
+        triggerToast('Something went wrong', 'danger')
       }
     };
 
@@ -130,7 +153,14 @@ export default {
       } catch (err) {
         console.log(err);
         error.value = 'Somthing went wrong.';
+        triggerToast('Something went wrong', 'danger')
       }
+    };
+
+    const moveToCreatePage = () => {
+      router.push({
+        name: 'TodoCreate',
+      })
     };
 
 
@@ -162,7 +192,11 @@ export default {
       error,
       numberOfPages,
       currentPage,
-      getTodos
+      getTodos,
+      toastMessage,
+      toastAlertType,
+      showToast,
+      moveToCreatePage
     };
   }
 }

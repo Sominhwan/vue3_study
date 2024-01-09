@@ -1,6 +1,7 @@
 // Composables
 import Home from '@/views/index.vue'
 import Todo from '@/views/todos/_id.vue'
+import TodoCreate from '@/views/todos/create/index.vue'
 import Todos from '@/views/todos/index.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -16,10 +17,16 @@ const routes = [
     component: Todos
   },
   {
+    path: '/todos/create',
+    name: 'TodoCreate',
+    component: TodoCreate
+  },
+  {
     path: '/todos/:id',
     name: 'Todo',
     component: Todo
   }
+
 ]
 
 const router = createRouter({
